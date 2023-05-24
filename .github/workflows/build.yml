@@ -1,7 +1,6 @@
-name: "Build"
+# Add a new tag to a commit based on semver
 on:
   push:
-    paths-ignore: [ '*.md' ]
     branches:
       - master
 
@@ -9,32 +8,12 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - run: |
-        npm install
-        npm run all
-  self-test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: ./
-      id: filter
-      with:
-        filters: '.github/filters.yml'
-    - name: filter-test
-      if: steps.filter.outputs.any != 'true' || steps.filter.outputs.error == 'true'
-      run: exit 1
   self_tag:
     runs-on: ubuntu-latest
-    needs:
-      - build
-      - self-test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: add release tag
         uses: letsenhance/semver-tags@main
         with:
